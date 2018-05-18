@@ -26,11 +26,6 @@ for(i=0;i<data.length;i++){
 //        function(){ $(this).removeClass('hover') })
 
 
-//
-// sleep after removing map, let's see if this helps?
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 //color picker modified from: https://stackoverflow.com/questions/7128675/from-green-to-red-color-depend-on-percentage
 // Gets color for regression line. Green = good r^2, red = bad. Hopefully won't go negative
@@ -46,6 +41,35 @@ function getColor(value){
 // Thanks: https://stackoverflow.com/questions/4020796/finding-the-max-value-of-an-attribute-in-an-array-of-objects
 max_x = Math.max.apply(Math, data_line.map(function(o){return o[0]}));
 max_y = Math.max.apply(Math, data_line.map(function(o){return o[1]}));
+
+
+//Calcualting residual stuff
+function add_residual_to_data(){
+    // puts residual into the data list []
+    for(i=0;i<data.length;i++){
+        data[i].properties.residual_of_current = data[i].properties.pctNo - ourCurrentRegression.predict(data[i].properties.PctTrump)[1] // switch to x_value
+    };
+};
+
+// calculating residual in terms of standard deviations from mean
+function add_std_dev_of_residual_to_data(){
+    myarr= []
+    for(i=0;i<data.length;i++){
+        myarr.push(data[i].properties.residual_of_current)
+    }
+    st_dev_results = standard_dev(myarr)
+    var min = 0
+    for(i=0;i<myarr.length;i++){
+        current_classification = classify_it(myarr[i], st_dev_results)
+        if(current_classification < min){
+            min = current_classification
+        }
+        data[i].properties.std_dev_of_residual = current_classification
+    };
+    // used for the lowest number in legend for map_part.js
+    data.min = min
+};
+
 
 // using functions as switch case.
 function linear_function(){
@@ -217,14 +241,14 @@ function draw(current_model){
                 svg.append("path")
                 .datum(steps)
                 .attr("class", "line")
-                .attr("style", "stroke:"+getColor(ourCurrentRegression.r2))
+                .attr("style", "stroke:"+ getColor(ourCurrentRegression.r2))
                 .attr("d", line);
 
                 titleDiv.innerHTML = current_model
                 regressionDiv.innerHTML = ourCurrentRegression.string +
                 "<br/>R² = "+ ourCurrentRegression.r2
-                add_residual_to_data() // map needs residuals to draw them
-
+                add_residual_to_data(); // map needs residuals to draw them
+                add_std_dev_of_residual_to_data();
 
                 x.domain(d3.extent(data_line, function(d) {
                     return d[0];
@@ -242,20 +266,4 @@ function draw(current_model){
             };
         }
 
-
-
-// where I left off -- need to calculate the standard deviation of residual for each
-// record. Not bad work so far!
-
-function add_residual_to_data(){
-    // puts residual into the data list []
-    for(i=0;i<data.length;i++){
-        data[i].properties.residual_of_current = data[i].properties.pctNo - ourCurrentRegression.predict(data[i].properties.PctTrump)[1] // switch to x_value
-
-
-    };
-}
-
-
 draw(CURRENT_MODEL)
-    

@@ -39,7 +39,8 @@ info.update = function (props) {
         '<table><tr><td> Trump Votes:</td><td>'+ Math.round(100*props.PctTrump)/100 +'%</td></tr>\
         </tr><tr><td> "No" votes:</td><td> '+ Math.round(100*props.pctNo)/100 +'%</td></tr>\
         <tr><td> Predicted "no" votes: </td><td> '+ Math.round(100*(props.pctNo - props.residual_of_current))/100 +'%</td>\
-        <tr><td> Residual (prediction error): </td><td> '+ Math.round(100*props.residual_of_current)/100 +'%</td></tr> </table>'
+        <tr><td> Residual (prediction error): </td><td> '+ Math.round(100*props.residual_of_current)/100 +'%</td></tr>\
+        <tr><td> Residual Standard Deviations:</td><td>'+ Math.round(100*props.std_dev_of_residual)/100+'</td></tr></table>'
         : 'Hover over a precinct');
 };
 
@@ -53,14 +54,14 @@ info.addTo(map);
 //removed because for number of something choropleth isn't the best. it's just for rates
 //L.control.layers(baseLayers, overlays, {position: 'bottomleft', collapsed: false}).addTo(map);
 
-
+// fix this!!!!
         function getColorForMap(d) {
-    return d > 12  ? '#b35806' :
-           d > 7.5  ? '#f1a340' :
-           d > 2.5  ? '#fee0b6' :
-           d > -2.5   ? '#f7f7f7' :
-           d > -7.5  ? '#d8daeb' :
-           d > -13   ? '#998ec3' :
+    return d > 2  ? '#b35806' :
+           d > 1  ? '#f1a340' :
+           d > .5  ? '#fee0b6' :
+           d > -.5   ? '#f7f7f7' :
+           d > -1  ? '#d8daeb' :
+           d > -2   ? '#998ec3' :
                    '#542788';
 };
 
@@ -71,7 +72,7 @@ function style(feature) {
         opacity: .5,
         color: 'white',
         fillOpacity: 0.7,
-        fillColor: getColorForMap(feature.properties.residual_of_current)
+        fillColor: getColorForMap(feature.properties.std_dev_of_residual)
     };
 }
     
@@ -125,9 +126,10 @@ map.attributionControl.addAttribution('By <a href="http://harrymaher.github.io" 
 
 var legend = L.control({position: 'bottomright'});
 legend.onAdd = function (map) {
+    min = (Math.round(data.min*10)/10);
     var div = L.DomUtil.create('div', 'info legend'),
-        grades = [-3.0, -2.0, -1.0, -0.5, 0.5, 1.0, 2.0],
-        labels = ["<span style='text-align:center !important; display:block !important;'>Standard Deviation<br>of Residuals</span>"],
+        grades = [min, -2, -1, -.5, .5, 1, 2,],
+        labels = ["<span style='text-align:center !important; display:inline-block !important;'>Residual<br>Standard Deviations</span>"],
         from, to;      
 
     for (var i = 0; i < grades.length; i++) {
@@ -135,8 +137,8 @@ legend.onAdd = function (map) {
         to = grades[i + 1];
 
         labels.push(
-            '<i style="background:' + getColorForMap(from + 1) + '"></i> ' +
-            from + (to ? '&ndash;' + to : '+'));
+            '<i style="background:' + getColorForMap(from + .01) + '"></i> ' +
+            from + (to ? '&nbsp; &ndash; &nbsp;' + to : '+'));
     }
 
     div.innerHTML = labels.join('<br>');
