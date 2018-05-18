@@ -11,7 +11,6 @@ function addCommas(nStr){
     return x1 + x2;
 };
 
-
 var population = new L.LayerGroup();
 
 var map = L.map('map',{
@@ -38,8 +37,8 @@ info.onAdd = function (map) {
 info.update = function (props) {
     this._div.innerHTML =  (props ?
         '<table><tr><td> Trump Votes:</td><td>'+ Math.round(100*props.PctTrump)/100 +'%</td></tr>\
+        </tr><tr><td> "No" votes:</td><td> '+ Math.round(100*props.pctNo)/100 +'%</td></tr>\
         <tr><td> Predicted "no" votes: </td><td> '+ Math.round(100*(props.pctNo - props.residual_of_current))/100 +'%</td>\
-        </tr><tr><td> Actual "no" votes:</td><td> '+ Math.round(100*props.pctNo)/100 +'%</td></tr>\
         <tr><td> Residual (prediction error): </td><td> '+ Math.round(100*props.residual_of_current)/100 +'%</td></tr> </table>'
         : 'Hover over a precinct');
 };
@@ -56,17 +55,17 @@ info.addTo(map);
 
 
         function getColorForMap(d) {
-    return d > 12  ? '#d53e4f' :
-           d > 7.5  ? '#fc8d59' :
-           d > 2.5  ? '#fee08b' :
-           d > -2.5   ? '#ffffbf' :
-           d > -7.5  ? '#e6f598' :
-           d > -13   ? '#99d594' :
-                   '#3288bd';
+    return d > 12  ? '#b35806' :
+           d > 7.5  ? '#f1a340' :
+           d > 2.5  ? '#fee0b6' :
+           d > -2.5   ? '#f7f7f7' :
+           d > -7.5  ? '#d8daeb' :
+           d > -13   ? '#998ec3' :
+                   '#542788';
 };
 
 
-function style3(feature) {
+function style(feature) {
     return {
         weight: 1,
         opacity: .5,
@@ -112,8 +111,8 @@ function onEachFeature(feature, layer) {
 
 function draw_map(){
     var residualfeatures = new L.LayerGroup();
-    geojson3 = L.geoJson(hoods, {
-        style: style3,
+    geojson3 = L.geoJson(hoods, {  // hoods needs to be whatever we're calling geojson
+        style: style,
         onEachFeature: onEachFeature
     }).addTo(residualfeatures);
     residualfeatures.addTo(map);
@@ -127,8 +126,8 @@ map.attributionControl.addAttribution('By <a href="http://harrymaher.github.io" 
 var legend = L.control({position: 'bottomright'});
 legend.onAdd = function (map) {
     var div = L.DomUtil.create('div', 'info legend'),
-        grades = [-17, -13, -2.5, 2.5, 7.5, 12],
-        labels = ["<div style='text-align:center !important;'>Prediction Error of Votes<br>(Actual% - Predicted %)</div>"],
+        grades = [-3.0, -2.0, -1.0, -0.5, 0.5, 1.0, 2.0],
+        labels = ["<span style='text-align:center !important; display:block !important;'>Standard Deviation<br>of Residuals</span>"],
         from, to;      
 
     for (var i = 0; i < grades.length; i++) {
