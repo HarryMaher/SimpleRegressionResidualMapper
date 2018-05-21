@@ -35,12 +35,17 @@ info.onAdd = function (map) {
 };
 
 info.update = function (props) {
+        x_prop = document.getElementById('x_dataset').value.split(";")[0]
+        y_prop = document.getElementById('y_dataset').value.split(";")[0]
+        x_title = document.getElementById('x_dataset').value.split(";")[1]
+        y_title = document.getElementById('y_dataset').value.split(";")[1]
     this._div.innerHTML =  (props ?
-        '<table><tr><td> Trump Votes:</td><td>'+ Math.round(100*props.PctTrump)/100 +'%</td></tr>\
-        </tr><tr><td> "No" votes:</td><td> '+ Math.round(100*props.pctNo)/100 +'%</td></tr>\
-        <tr><td> Predicted "no" votes: </td><td> '+ Math.round(100*(props.pctNo - props.residual_of_current))/100 +'%</td>\
+        /// these props are wrong because need to divide by "b"
+        '<table><tr><td>'+x_title+' votes:</td><td>'+ Math.round(props[x_prop]/props["b"] * 10000)/100 +'% ('+props[x_prop] +')</td></tr>\
+        </tr><tr><td>'+y_title+' votes:</td><td> '+ Math.round(props[y_prop]/props["b"] * 10000)/100 +'% ('+props[y_prop] +')</td></tr>\
+        <tr><td> Predicted '+y_title+' votes: </td><td> '+ Math.round(100*(props[y_prop]/props["b"] * 100 - props.residual_of_current))/100 +'% ('+ Math.round(((props[y_prop]/props["b"] * 100 - props.residual_of_current))/100 * props["b"])+')</td>\
         <tr><td> Residual (prediction error): </td><td> '+ Math.round(100*props.residual_of_current)/100 +'%</td></tr>\
-        <tr><td> Residual Standard Deviations:</td><td>'+ Math.round(100*props.std_dev_of_residual)/100+'</td></tr></table>'
+        <tr><td> Res. Standard Dev.:</td><td>'+ Math.round(100*props.std_dev_of_residual)/100+'</td></tr></table>'
         : 'Hover over a precinct');
 };
 
@@ -112,7 +117,7 @@ function onEachFeature(feature, layer) {
 
 function draw_map(){
     var residualfeatures = new L.LayerGroup();
-    geojson3 = L.geoJson(hoods, {  // hoods needs to be whatever we're calling geojson
+    geojson3 = L.geoJson(precincts, {  // precincts needs to be whatever we're calling geojson
         style: style,
         onEachFeature: onEachFeature
     }).addTo(residualfeatures);

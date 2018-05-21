@@ -69,7 +69,11 @@ div.tooltip {
 select {
     margin-top:5px;
     font-family: segoe ui;
+    width: 90px;
 }
+
+
+
 
 /* Map styles! These may conflict w/ above!!! */
 

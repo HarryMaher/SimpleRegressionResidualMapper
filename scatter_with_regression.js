@@ -10,15 +10,8 @@
 
 CURRENT_MODEL = "Linear Regression"
 
-var data = hoods.features //data -- change to accurately reflect data served
-var data_line = []
-for(i=0;i<data.length;i++){
-    x = data[i].properties.PctTrump  // rename to .XProp
-    y = data[i].properties.pctNo     // rename to .Yprop
-    if ((x > 0.1) && (y > 0.1)){
-        data_line.push([x, y])
-    }
-};
+var data = precincts.features //data -- change to accurately reflect data served
+
 
 // // hmm this requires jquery. hover pls clean later
 // $('#dot').hover(
@@ -38,16 +31,13 @@ function getColor(value){
     return ["hsl(",hue,",100%,50%)"].join("");
 }   
 
-// Thanks: https://stackoverflow.com/questions/4020796/finding-the-max-value-of-an-attribute-in-an-array-of-objects
-max_x = Math.max.apply(Math, data_line.map(function(o){return o[0]}));
-max_y = Math.max.apply(Math, data_line.map(function(o){return o[1]}));
 
 
 //Calcualting residual stuff
-function add_residual_to_data(){
+function add_residual_to_data(x_prop, y_prop){
     // puts residual into the data list []
     for(i=0;i<data.length;i++){
-        data[i].properties.residual_of_current = data[i].properties.pctNo - ourCurrentRegression.predict(data[i].properties.PctTrump)[1] // switch to x_value
+        data[i].properties.residual_of_current = (Math.round((data[i].properties[y_prop] / data[i].properties.b) * 10000)/100) - ourCurrentRegression.predict((Math.round((data[i].properties[x_prop] / data[i].properties.b) * 10000)/100))[1] // switch to x_value
     };
 };
 
@@ -55,8 +45,11 @@ function add_residual_to_data(){
 function add_std_dev_of_residual_to_data(){
     myarr= []
     for(i=0;i<data.length;i++){
-        myarr.push(data[i].properties.residual_of_current)
-    }
+        // Check to remove infinities. They exist in logarithmic regression
+        if(data[i].properties.residual_of_current < Infinity){
+            myarr.push(data[i].properties.residual_of_current);
+        };  
+    };
     st_dev_results = standard_dev(myarr)
     var min = 0
     for(i=0;i<myarr.length;i++){
@@ -102,13 +95,31 @@ document.getElementById("y_dataset").onchange=function() {
 }
 
 
-ourCurrentRegression = regression.linear(data_line)
-var regressionDiv = document.getElementById('formula')
-var r2Div = document.getElementById('r2')
-var titleDiv = document.getElementById('currentRegressionModel')
 
 // put it in the doc!
 function draw(current_model){
+    var data_line = []
+    x_prop = document.getElementById('x_dataset').value.split(";")[0]
+    y_prop = document.getElementById('y_dataset').value.split(";")[0]
+    for(i=0;i<data.length;i++){
+        x = (Math.round((data[i].properties[x_prop] / data[i].properties.b) * 10000)/100);  // rename to .XProp
+        y = (Math.round((data[i].properties[y_prop] / data[i].properties.b) * 10000)/100);   // rename to .Yprop
+        if ((x > 0.001) && (y > 0.001)){
+            data_line.push([x, y])
+        }
+    };
+
+    var regressionDiv = document.getElementById('formula')
+    var r2Div = document.getElementById('r2')
+    var titleDiv = document.getElementById('currentRegressionModel')
+
+
+    // Thanks: https://stackoverflow.com/questions/4020796/finding-the-max-value-of-an-attribute-in-an-array-of-objects
+
+    max_x = Math.max.apply(Math, data_line.map(function(o){return o[0]}));
+    max_y = Math.max.apply(Math, data_line.map(function(o){return o[1]}));
+
+
     try{
         document.getElementById("scatter_svg").remove()
     }
@@ -137,7 +148,7 @@ function draw(current_model){
     }
 
     // steps for line.. 1 per until max x value
-    var steps = Array.apply(null, Array(max_x)).map(function (_, i) {return i+1;});
+    var steps = Array.apply(null, Array(100)).map(function (_, i) {return i+1;});
 
     var margin = {
             top: 10,
@@ -188,7 +199,7 @@ function draw(current_model){
         .attr("x", width)
         .attr("y", -6)
         .style("text-anchor", "end")
-        .text(document.getElementById('x_dataset').value);
+        .text(document.getElementById('x_dataset').value.split(";")[1]);
 
     svg.append("g")
         .attr("id", "y_axis")
@@ -200,8 +211,7 @@ function draw(current_model){
         .attr("y", 6)
         .attr("dy", ".71em")
         .style("text-anchor", "end")
-        .text(document.getElementById('y_dataset').value);
-
+        .text(document.getElementById('y_dataset').value.split(";")[1]);
 
     svg.selectAll(".dot")
         .data(data_line)
@@ -247,7 +257,7 @@ function draw(current_model){
                 titleDiv.innerHTML = current_model
                 regressionDiv.innerHTML = ourCurrentRegression.string +
                 "<br/>R² = "+ ourCurrentRegression.r2
-                add_residual_to_data(); // map needs residuals to draw them
+                add_residual_to_data(x_prop, y_prop); // map needs residuals to draw them
                 add_std_dev_of_residual_to_data();
 
                 x.domain(d3.extent(data_line, function(d) {
