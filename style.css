@@ -15,12 +15,16 @@
 
 .axis text {
     font-size: 10px;
-    font-family: segoe ui;
+    font-family: 'segoe ui', 'Open Sans', sans-serif;
+
+;
 }
 
 svg text.label {
     font-size: 30px; 
-    font-family: segoe ui;
+    font-family: 'segoe ui', 'Open Sans', sans-serif;
+
+;
 }
 
 .dot {
@@ -36,7 +40,9 @@ div.tooltip {
     width: 100px;                    
     height: 50px;                   
     padding: 2px;               
-    font: 12px segoe ui;      
+    font: 12px 'segoe ui', 'Open Sans', sans-serif;
+
+;      
     background: lightsteelblue; 
     border: 0px;        
     border-radius: 8px;         
@@ -52,7 +58,9 @@ div.tooltip {
     background-color: rgba(255, 255, 255, 0.98);
     min-width: 400px;
     min-height: 480px;
-    font-family: segoe ui;
+    font-family: 'segoe ui', 'Open Sans', sans-serif;
+
+;
     box-shadow: 0 0 15px rgba(0,0,0,0.2);
     border-radius: 5px;
 }
@@ -68,7 +76,9 @@ div.tooltip {
 
 select {
     margin-top:5px;
-    font-family: segoe ui;
+    font-family: 'segoe ui', 'Open Sans', sans-serif;
+
+;
     width: 90px;
 }
 
@@ -87,12 +97,16 @@ html, body, #map {
     top: 0px;
     height: 100%;
     width: 100%;
-    font-family: segoe ui;
+    font-family: 'segoe ui', 'Open Sans', sans-serif;
+
+;
 }
 
 .info {
     padding: 6px 8px;
-    font: 14px/16px segoe ui;
+    font: 14px/16px 'segoe ui', 'Open Sans', sans-serif;
+
+;
     background: white;
     background: rgba(255,255,255, 1.0);
     box-shadow: 0 0 15px rgba(0,0,0,0.2);
