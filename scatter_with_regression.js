@@ -8,10 +8,10 @@
 ///see if we can write another one that can add residual to the_data, 
 /// first see if we can run residual on a list of lists w/ more than 2 elements!
 
-CURRENT_MODEL = "Linear Regression"
+var CURRENT_MODEL = "Linear Regression";
 
-var data = precincts.features //data -- change to accurately reflect data served
-
+var data = precincts.features; //data -- change to accurately reflect data served
+var UID = "NAME"; // change this to be the unique id for each feature
 
 // // hmm this requires jquery. hover pls clean later
 // $('#dot').hover(
@@ -21,7 +21,7 @@ var data = precincts.features //data -- change to accurately reflect data served
 
 
 //color picker modified from: https://stackoverflow.com/questions/7128675/from-green-to-red-color-depend-on-percentage
-// Gets color for regression line. Green = good r^2, red = bad. Hopefully won't go negative
+// Gets color for regression line. Green = good r^2, red = bad. Hopefully won't go too negative
 function getColor(value){
     if(value < 0){
         value = 0
@@ -46,13 +46,11 @@ function add_std_dev_of_residual_to_data(){
     myarr= []
     for(i=0;i<data.length;i++){
         // Check to remove infinities. They exist in logarithmic regression
-        if(data[i].properties.residual_of_current < Infinity){
-            myarr.push(data[i].properties.residual_of_current);
-        };  
+        myarr.push(data[i].properties.residual_of_current);
     };
-    st_dev_results = standard_dev(myarr)
+    st_dev_results = standard_dev(myarr);
     var min = 0
-    for(i=0;i<myarr.length;i++){
+    for(i=0;i<data.length;i++){
         current_classification = classify_it(myarr[i], st_dev_results)
         if(current_classification < min){
             min = current_classification
@@ -96,16 +94,19 @@ document.getElementById("y_dataset").onchange=function() {
 
 
 
+
+
 // put it in the doc!
 function draw(current_model){
     var data_line = []
     x_prop = document.getElementById('x_dataset').value.split(";")[0]
     y_prop = document.getElementById('y_dataset').value.split(";")[0]
     for(i=0;i<data.length;i++){
-        x = (Math.round((data[i].properties[x_prop] / data[i].properties.b) * 10000)/100);  // rename to .XProp
-        y = (Math.round((data[i].properties[y_prop] / data[i].properties.b) * 10000)/100);   // rename to .Yprop
-        if ((x > 0.001) && (y > 0.001)){
-            data_line.push([x, y])
+        x = (Math.round((data[i].properties[x_prop] / data[i].properties.b) * 10000)/100);
+        y = (Math.round((data[i].properties[y_prop] / data[i].properties.b) * 10000)/100);
+        z = data[i].properties[UID]   
+        if ((x > 0.0001) && (y > 0.0001)){
+            data_line.push([x, y, z])
         }
     };
 
@@ -159,13 +160,16 @@ function draw(current_model){
         width = 400 - margin.left - margin.right,
         height = 350 - margin.top - margin.bottom;
 
+
+
     var x = d3.scale.linear()
-              .domain([0, max_x])  // the range of the values to plot
-              .range([ 0, width ]);        // the pixel range of the x-axis
+          .domain([0, max_x])  // the range of the values to plot
+          .range([ 0, width ]);        // the pixel range of the x-axis
 
     var y = d3.scale.linear()
-              .domain([0, max_y])
-              .range([ height, 0 ]);
+          .domain([0, max_y])
+          .range([ height, 0 ]);
+
 
     var xAxis = d3.svg.axis()
         .scale(x)
@@ -213,16 +217,19 @@ function draw(current_model){
         .style("text-anchor", "end")
         .text(document.getElementById('y_dataset').value.split(";")[1]);
 
+
     svg.selectAll(".dot")
         .data(data_line)
         .enter().append("circle")
-            .attr("class","dot")
+            .attr("class", "dot" )
             // For a possible solution for highlighting map features with dots
-            .attr("id", function (d) { return d[1];})
+            .attr("id", function (d) { return d[2];})
             .attr("r", 3.5)
             .attr("cy", function (d) { return y(d[1]);}) // translate y value to a pixel
             .attr("cx", function (d,i) { return x(d[0]); } ) 
-        .on("mouseover", function(d) {      
+        .on("mouseover", function(d) {
+
+            d3.select("."+d[2].replace(" ", "")).attr("style", "stroke-width: 5; stroke: #666; fillOpacity: 0.7");
             div.transition()        
                 .duration(200)      
                 .style("opacity", .8);      
@@ -234,7 +241,10 @@ function draw(current_model){
                 .style("left", (d3.event.pageX) + "px")     
                 .style("top", (d3.event.pageY - 28) + "px");    
             })                  
-        .on("mouseout", function(d) {       
+        .on("mouseout", function(d) {
+
+            // now map part won't highlight-- this isn't reversable :(
+            d3.select("."+d[2].replace(" ", "")).attr("style", "");       
             div.transition()        
                 .duration(500)      
                 .style("opacity", 0);   
@@ -268,7 +278,7 @@ function draw(current_model){
                 }));
 
             try{
-                map.removeLayer(geojson3);
+                map.removeLayer(geojson);
                 draw_map(); // this lives in map_part.js
                 }
             catch(err){ 

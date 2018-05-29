@@ -1,14 +1,13 @@
 .line {
     stroke: #E4002B;
     fill: none;
-    opacity: .7;
     stroke-width: 3;
 }
 
 .axis path,
 .axis line {
     fill: none;
-    stroke: lightgrey;
+    stroke: #D3D3D3;
     stroke-opacity: 0.7;
     shape-rendering: crispEdges;
 }
@@ -30,7 +29,7 @@ svg text.label {
 .dot {
     stroke: #293b47;
     fill: #7A99AC;
-    opacity: .4;
+    opacity: .2;
 }
 
 
@@ -43,7 +42,7 @@ div.tooltip {
     font: 12px 'segoe ui', 'Open Sans', sans-serif;
 
 ;      
-    background: lightsteelblue; 
+    background: #B0C4DE; 
     border: 0px;        
     border-radius: 8px;         
     pointer-events: none;  
@@ -77,12 +76,37 @@ div.tooltip {
 select {
     margin-top:5px;
     font-family: 'segoe ui', 'Open Sans', sans-serif;
-
-;
     width: 90px;
 }
 
+button {
+    display: inline-block;
+    border: none;
+    padding: 4px;
+    margin: 0;
+    text-decoration: none;
+    background: #D3D3D3;
+    border-radius: 3px;
+    color: #000;
+    cursor: pointer;
+    text-align: center;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
 
+button:hover,
+button:focus {
+    background: #A9A9A9;
+}
+
+button:focus {
+    outline: 1px solid #fff;
+    outline-offset: -4px;
+}
+
+button:active {
+    transform: scale(0.99);
+}
 
 
 /* Map styles! These may conflict w/ above!!! */

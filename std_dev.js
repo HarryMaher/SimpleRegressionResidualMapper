@@ -5,17 +5,24 @@
 
 // Take an array, return std_dev and average
 function standard_dev(in_array){
+    var better_array = [];
+    for(i=0;i<in_array.length;i++){
+        if(isNaN(in_array[i])){
+             //pass console.log("skipped");
+         } else{
+            better_array.push(in_array[i]);
+         };
+    };
     function add(a, b){
         return a + b;
-    }
-    my_avg = (in_array.reduce(add, 0)/in_array.length)
-
+    };
+    my_avg = (better_array.reduce(add, 0) / better_array.length)
     // get sum of mean difference squares
     myarr_prime = 0
-    for(i=0;i<in_array.length;i++){
-        myarr_prime += ((in_array[i]-my_avg)**2);
+    for(i=0;i<better_array.length;i++){
+        myarr_prime += ((better_array[i] - my_avg) ** 2);
     };
-    mean_sum_square_diff = (myarr_prime/in_array.length);
+    mean_sum_square_diff = (myarr_prime/better_array.length);
 
     // One standard deviation:
     std_dev = Math.sqrt(mean_sum_square_diff);

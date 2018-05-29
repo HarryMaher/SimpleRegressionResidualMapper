@@ -59,7 +59,7 @@ info.addTo(map);
 //removed because for number of something choropleth isn't the best. it's just for rates
 //L.control.layers(baseLayers, overlays, {position: 'bottomleft', collapsed: false}).addTo(map);
 
-// fix this!!!!
+// fix?
         function getColorForMap(d) {
     return d > 2  ? '#b35806' :
            d > 1  ? '#f1a340' :
@@ -77,6 +77,7 @@ function style(feature) {
         opacity: .5,
         color: 'white',
         fillOpacity: 0.7,
+        className: feature.properties.NAME.replace(" ", ""), // this should be whatever the unique identifier is
         fillColor: getColorForMap(feature.properties.std_dev_of_residual)
     };
 }
@@ -96,13 +97,34 @@ function highlightFeature(e) {
     }
 
     info.update(layer.feature.properties);
+
+    // draw a circle on the scatterplot at x and y coordinates.
+
+    // x_prop = document.getElementById('x_dataset').value.split(";")[0]
+    // y_prop = document.getElementById('y_dataset').value.split(";")[0]
+
+    // svg.selectAll(".dot")
+    // .data(layer.feature.properties)
+    // .enter().append("circle")
+    //     .attr("class", "highlighted-dot" )
+    //     // For a possible solution for highlighting map features with dots
+    //     .attr("id", "temporary")
+    //     .attr("r", 5)
+    //     .attr("cy", function (d) { return y(d.y_prop);}) // translate y value to a pixel
+    //     .attr("cx", function (d,i) { return x(d.x_prop); } ) 
+
+    document.getElementById(layer.feature.properties.NAME).style.opacity = 1
+    document.getElementById(layer.feature.properties.NAME).style.fill = "black";
 }
 
-var geojson3;
+var geojson;
 
 
 function resetHighlight(e) {
-    geojson3.resetStyle(e.target);
+    var layer = e.target;
+    document.getElementById(layer.feature.properties.NAME).style.opacity = .2;
+    document.getElementById(layer.feature.properties.NAME).style.fill = "#7A99AC";
+    geojson.resetStyle(e.target);
     info.update();
 }
 
@@ -117,7 +139,7 @@ function onEachFeature(feature, layer) {
 
 function draw_map(){
     var residualfeatures = new L.LayerGroup();
-    geojson3 = L.geoJson(precincts, {  // precincts needs to be whatever we're calling geojson
+    geojson = L.geoJson(precincts, {  // precincts needs to be whatever we're calling geojson
         style: style,
         onEachFeature: onEachFeature
     }).addTo(residualfeatures);
