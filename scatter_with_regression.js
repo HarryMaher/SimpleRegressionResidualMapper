@@ -125,7 +125,7 @@ function draw(current_model){
         document.getElementById("scatter_svg").remove()
     }
     catch(err){
-        console.log("can't remove what's not there")
+        //console.log("can't remove what's not there")
     }
 
     switch(current_model){
@@ -282,7 +282,7 @@ function draw(current_model){
                 draw_map(); // this lives in map_part.js
                 }
             catch(err){ 
-                console.log("And again");
+                //console.log("And again");
             };
         }
 

@@ -7,10 +7,11 @@
 function standard_dev(in_array){
     var better_array = [];
     for(i=0;i<in_array.length;i++){
-        if(isNaN(in_array[i])){
-             //pass console.log("skipped");
-         } else{
+        if(isFinite(in_array[i])){
             better_array.push(in_array[i]);
+         } else{
+            // skip others
+            // console.log("skipped" + in_array[i]);
          };
     };
     function add(a, b){

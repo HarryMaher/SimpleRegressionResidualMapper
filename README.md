@@ -9,7 +9,6 @@ Turning out to be a mostly JS project, but this is very much a work in progress.
 
 - Geopandas w/ pandas file to join csv to spatial dataset.
 - above output -> geojson and index.html so one can automate this process. 
-- figure out how to avoid some maps turning completely purple -- handle 0 is infinity or -infinity
 - is the legend getting recalculated?
 - get more data, clean
 - An entire back-end to allow for more datasets? PostgreSQL?
